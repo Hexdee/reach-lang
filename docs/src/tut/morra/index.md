@@ -235,7 +235,7 @@ export const main = Reach.App(() => {
 ```
 + Line 3 - 5: we declared the `Player` interface which has 3 functions: `makeGuess`, `showHand` and `getResult`
 
-The interface is what allows the frontend communicate with the backend. We'll see how this functions are implemented late on the frontend
+The interface is what allows the frontend communicate with the backend. We'll see how this functions are implemented later on the frontend
 + Line 19: we created a new Participant, Charlie
 + line 12 and 16 and 20: we added the Player interface to the 3 participants interact interface
 + Line 37, 44 and 50: Because we've added the Player interface to the Participant, each players can now use the use the `interact.makeGuess()` to make their guess
@@ -296,8 +296,8 @@ await Promise.all([
 console.log('Goodbye, Alice, Bob and Charlie!');
 ```
 
-+ Line 15: We have an array variable `OUTCOME`, which we'd use to interpret the outcome gotten from the backend
-+ Line 16 - 30: We define the Player function where we implemented contains `makeGuess`, `showHand` and `getResult`
++ Line 15: We have an array variable `OUTCOME`, which we'd use to interpret the outcome we got from the backend
++ Line 16 - 30: We define the Player function where our implementation contains `makeGuess`, `showHand` and `getResult`
 + Line 35, 39 and 43: We added these functions to each players backend
 
 Now, lets run our program:
@@ -323,7 +323,7 @@ Goodbye, Alice, Bob and Charlie!
 
 ## {#morra-2} Add wager
 
-In this section, we will be adding wager to our program, so that the winner of the game can also earn some money. It goes like this: 
+In this section, we will be adding wager to our program, so that the winner of the game can also earn some money. The introduction of the wager allows the winner of the game to earn the total money each participants wages at the start of the game.  It goes like this: 
 The first participant set the wager, then other participants needs to accept before joining the game.
 
 Here are the steps to achieve this
@@ -354,7 +354,7 @@ To allow Bob and Charlie accept wagger, we'll add an acceptWager function to the
   });
 ```
 
-Now, when Alice makes his first guess, She should also set the wager and send the amount of token to the smart contract
+Now, when Alice makes his first guess, She should also set the wager and send the amount of token to the smart contract. 
 
 ```javascript
   // Make Guess
@@ -390,7 +390,7 @@ Bob and Charlie must also accept wager before they can make a guess
 ```
 
 And in the end we transfer all tokens to the winner, or return their tokens(if there's no winner)
-Add this code after the code where we compute the outcome, should be around line 79
+Add this code immediately after the code where we compute the outcome, i.e add this code immediately after line 79
 ```javascript
   if (outcome != 0) {
     outcome == 1 ? transfer(wager * 3).to(Alice) :
@@ -473,11 +473,11 @@ await displayBalance(accCharlie, "Charlie");
 
 console.log('Goodbye, Alice, Bob and Charlie!');
 ```
-+ Lines 10 through 16 define, we defined 3 functions, `fmt` which formats our currency to 4 decimal places, `getBalance` which get's the balance of a user and fomart it using the `fmt` function, and lastly w have the `displayBalance` function, this function takes in a user, uses the getBalance function to get his balance then displays it on the console
++ Lines 10 through 16 define, we defined 3 functions, `fmt` which formats our currency to 4 decimal places, `getBalance` which gets the balance of a user and fomart it using the `fmt` function, and lastly w have the `displayBalance` function, this function takes in a user, uses the getBalance function to get his balance then displays it on the console
 + Line 48, We let Alice set the wager to 10
 + Line 53 and 58, Bob and Charlie accepts the wager
 
-If we run how program now with
+If we run our program now with
 ```bash
 ./reach run
 ```
@@ -515,11 +515,11 @@ The participants balances are slightly less than the expected balance because of
 
 ## {#morra-3} Secure Morra
 
-Although the current version of our program seems to be working without problem, there is a serious security issue we must tackle. 
-What if one of the players(for example Charlie) decided to cheat?. He can easily do this because when Alice and Bob played their hand, they published it to the consensus protocol where Charlie can also see it. Therefore, he can easily manipulate the result to make himself the winner or make sure no one wins.
+Although the current version of our program seems to be working without problem, there is a serious security issue we need to tackle. 
+For instance, what if one of the players(for example Charlie) decided to cheat or decided to manipulate the game?. He can easily do this because when Alice and Bob played their hand, they published it to the consensus protocol where Charlie can also see it. Therefore, he can easily manipulate the result to make himself the winner or make sure no one wins.
 
 :::note
-In the original Morra game, this problem does not exist because the players show their and simultaneuosly which cannot be easily achieved on a consensus protocol
+In the original Morra game, this problem does not exist because the players show their hand simultaneuosly which cannot be easily achieved on a consensus protocol
 :::
 
 Therefore we'll be introducing two new functions:
@@ -557,7 +557,7 @@ First we update how Alice and Bob show their hand, Line 29 - 35
   commit();
 ```
 
-Charlie can reveal his hand because no one is playing after him. So after Charlie plays his one hand, Alice and Bob would also reveal their hand. But before that, we want to be sure that Alice and Bob hands are not really known to Charlie before they reveal it. And Bob also does not know Alice hand
+Charlie can reveal his hand because no one is playing after him. So after Charlie plays his one hand, Alice and Bob would also reveal their hand. But before that, we want to be sure that Alice and Bob hands are not known to Charlie before they reveal it. And Bob also does not know Alice hand
 To do this, we'll be using the `unknowable()` provided by reach
 Let's add this after Charlie publishes his hand
 ```javascript
@@ -565,7 +565,7 @@ Let's add this after Charlie publishes his hand
   unknowable(Charlie, Bob(_bobHand));
   unknowable(Bob, Alice(_aliceHand));
 ```
-Now let's reveal Alice ane Bob hands
+Now let's reveal Alice and Bob hands
 
 ```javascript
   // Show hand
@@ -592,13 +592,14 @@ The frontend still remain the same, so we can now run our program using
 ./reach run
 ```
 
-We'll ge the same output we got in {##morra-2}, we can still see all the participant hands printed on the screen but that's because the 3 participants are playing on the same system, in the real sense, only the participant can see their own hand.
+We'll get the same output we got in {##morra-2}, we can still see all the participant hands printed on the screen but that's because the 3 participants are playing on the same system, in the real sense, only the participant can see their own hand.
 
 ## {#tut-7} Continue playing
 
-In this section, we extend our application so that the participant continue to play against each other until there is a clear winner, so if it is a draw they will continue playing. But how do we do this in reach ? Reach supports while loop!
+In this section, we extend our application so that the participant continue to play against each other until there is a clear winner, so if it is a draw they will continue playing. 
+But how do we do this in reach ? Reach supports while loop!
 
-We want to the user continue playing `while` there is no winner(`outcome = 0`), that is our loop would look something like this
+We want the user to continue playing `while` there is no winner(`outcome = 0`), that is, our loop would look something like this
 ```javascript
 var outcome = 0;
 while(outcome = 0) {
@@ -607,7 +608,7 @@ while(outcome = 0) {
 
 ```
 However "Reach requires that while loops are annotated with [loop invariants](https://en.wikipedia.org/wiki/Loop_invariant). A loop invariant is a property INV which is true before the loop starts and is true after the loop ends"
-In this case we'll be using the contract balance as an invariant, therefore our loop will now be
+In this case we'll be using the contract balance as an invariant, therefore our loop will now be:
 
 ```javascript
 var outcome = 0;
